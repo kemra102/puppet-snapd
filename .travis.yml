@@ -1,0 +1,22 @@
+---
+language: ruby
+bundler_args: --without system_tests
+script: "bundle exec rake test"
+matrix:
+  fast_finish: true
+  include:
+  - rvm: 2.1.5
+    env: PUPPET_GEM_VERSION="~> 4.0"
+  - rvm: 2.1.6
+    env: PUPPET_GEM_VERSION="~> 4.1"
+  - rvm: 2.1.7
+    env: PUPPET_GEM_VERSION="~> 4.2"
+  - rvm: 2.1.8
+    env: PUPPET_GEM_VERSION="~> 4.3"
+  - rvm: 2.1.9
+    env: PUPPET_GEM_VERSION="~> 4.4"
+  - rvm: 2.1.9
+    env: PUPPET_GEM_VERSION="~> 4"
+branches:
+  only:
+    - master
