@@ -1,0 +1,32 @@
+{
+  "name": "kemra102-snapd",
+  "version": "1.0.0",
+  "author": "Danny Roberts",
+  "summary": "Install and manage the snapd service for installing and managing snap packages.",
+  "license": "BSD-2-Clause",
+  "source": "https://github.com/kemra102/puppet-snapd",
+  "project_page": "https://github.com/kemra102/puppet-snapd",
+  "issues_url": "https://github.com/kemra102/puppet-snapd/issues",
+  "tags": [ "package", "packages", "snap", "snaps", "install" ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Archlinux"
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [ "16.04", "16.10" ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": ">= 2015.2"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.0.0"
+    }
+  ],
+  "dependencies": [],
+  "data_provider": null
+}

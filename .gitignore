@@ -1,0 +1,29 @@
+.rspec
+results
+tags
+.*.sw[op]
+ext/packaging
+pkg
+test.pp
+# YARD generated documentation
+.yardoc
+/doc
+/.rvmrc
+.bundle/
+ext/packaging/
+pkg/
+Gemfile.lock
+Gemfile.local
+.bundle/
+puppet-acceptance/
+/.project
+.idea/
+.ruby-version
+.ruby-gemset
+acceptance/junit
+acceptance/log
+acceptance/.bundle
+# emacs backup files
+*~
+/*.samples
+coverage/
