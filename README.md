@@ -62,12 +62,15 @@ Supported Puppet Versions:
 * Puppet Enterprise >= 2015.2
 * Puppet Open Source >= 4.0.0
 
+## Provider
+We provide a basic package provider which allows installs and removes, we will need to add latest,query and update support in the future.
+
 ## Development
 
 To contribute to the development of this module please raise a pull request.
 
 Particular help is currently highly desired particularly on the following items:
 
-* A `snap` provider for the out of the box Puppet `package` type.
+* Package provider query,latest and update functionality
 * Support for more Operating Systems.
 * More testing.
