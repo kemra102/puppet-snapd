@@ -7,33 +7,50 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
 
   confine :operatingsystem => :ubuntu
   commands :installer => "/usr/bin/snap"
+  has_feature :purgeable
+  has_feature :upgradeable
 
   def self.instances
-    instance_by_name.collect do |name|
-      self.new(
+    output = installer "list"
+    lines = output.split("\n")
+    lines.shift # skip header
+    instances = []
+
+    lines.each { |line|
+      unless line =~ /^(\S+)\s+(\S+)\s+(.+)$/
+        raise Puppet::Error.new(line + " does not contain a version", 1)
+      end
+
+      name = $1
+      version = $2
+
+      instances << self.new(
         :name     => name,
         :provider => :snap,
-        :ensure   => :installed
+        :ensure   => version
       )
-    end
-  end
-
-  def self.instance_by_name
-    Dir.entries("/snap/bin").find_all { |f|
-      f =~ /\.pkg$/
-    }.collect { |name|
-      yield name if block_given?
-
-      name
     }
+
+    instances
   end
 
   def query
-    Puppet::FileSystem.exist?("/snap/bin/#{@resource[:name]}") ? {:name => @resource[:name], :ensure => :present} : nil
+    instances = self.class.instances
+    instances.each { |instance|
+      if instance.name == @resource[:name]
+        return instance
+      end
+    }
+
+    nil
   end
 
   def install
     installer "install", "--classic", @resource[:name]
+  end
+
+  def purge
+    installer "remove", @resource[:name]
   end
 
   def uninstall
