@@ -39,4 +39,28 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
   def uninstall
     installer "remove", @resource[:name]
   end
+
+  def latest
+    output = installer "search", @resource[:name]
+    lines = output.split("\n")
+    lines.shift # skip header
+
+    lines.each { |line|
+      unless line =~ /^(\S+)\s+(\S+)\s+(.+)$/
+        raise Puppet::Error.new(line + " does not contain a version", 1)
+      end
+
+      name = $1
+      version = $2
+      info = $3
+
+      if name == @resource[:name]
+        return version
+      end
+    }
+  end
+
+  def update
+    installer "refresh", @resource[:name]
+  end
 end
