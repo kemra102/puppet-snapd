@@ -78,6 +78,10 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
   end
 
   def update
+    unless self.query
+      return self.install
+    end
+
     installer "refresh", @resource[:name]
   end
 end
