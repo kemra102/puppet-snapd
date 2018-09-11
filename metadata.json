@@ -1,6 +1,6 @@
 {
   "name": "kemra102-snapd",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Danny Roberts",
   "summary": "Install and manage the snapd service for installing and managing snap packages.",
   "license": "BSD-2-Clause",
@@ -14,13 +14,13 @@
     },
     {
       "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [ "16.04", "16.10" ]
+      "operatingsystemrelease": [ "16.04", "18.04" ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.0.0 < 5.0.0"
+      "version_requirement": ">= 4.0.0 < 6.0.0"
     }
   ],
   "dependencies": [],
