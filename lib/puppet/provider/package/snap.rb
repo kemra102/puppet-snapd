@@ -13,7 +13,7 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
 
   def self.instances
     output = installer "list"
-    lines = output.split("\n")
+    lines = output.force_encoding("UTF-8").split("\n")
     lines.shift # skip header
     instances = []
 
@@ -62,7 +62,7 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
 
   def latest
     output = installer "search", @resource[:name]
-    lines = output.split("\n")
+    lines = output.force_encoding("UTF-8").split("\n")
     lines.shift # skip header
 
     lines.each { |line|
