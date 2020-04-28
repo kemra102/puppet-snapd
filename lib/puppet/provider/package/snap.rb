@@ -9,6 +9,7 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
   commands :installer => "/usr/bin/snap"
   has_feature :purgeable
   has_feature :upgradeable
+  has_feature :install_options
 
   def self.instances
     output = installer "list"
@@ -46,7 +47,9 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
   end
 
   def install
-    installer "install", "--classic", @resource[:name]
+    install_options = @resource[:install_options] || ['--classic']
+    args = install_options.push(@resource[:name])
+    installer "install", *args
   end
 
   def purge
