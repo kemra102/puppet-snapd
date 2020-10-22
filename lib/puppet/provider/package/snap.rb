@@ -1,4 +1,5 @@
 require 'puppet/provider/package'
+require 'open3'
 
 # Super simple snap package provider
 # todo: latest, update
@@ -10,6 +11,7 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
   has_feature :purgeable
   has_feature :upgradeable
   has_feature :install_options
+  has_feature :versionable
 
   def self.instances
     output = installer "list"
@@ -47,9 +49,19 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
   end
 
   def install
-    install_options = @resource[:install_options] || ['--classic']
-    args = install_options.push(@resource[:name])
-    installer "install", *args
+    
+    info = installer "info", @resource[:name]
+    if $?.success?
+       test = `snap info lxd | grep 'tracking:' | sed 's/tracking: *//' | tr -d '\n'`
+       if @resource[:ensure] != test
+           installer "refresh", @resource[:name] ,"--channel=#{@resource[:ensure]}"
+       end
+    else
+	#package is not installed
+        install_options = @resource[:install_options] || ['--classic']
+        args = install_options.push(@resource[:name])
+        installer "install", *args
+    end
   end
 
   def purge
