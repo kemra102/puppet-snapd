@@ -1,4 +1,5 @@
 require 'puppet/provider/package'
+require 'shellwords'
 
 # Super simple snap package provider
 # todo: latest, update
@@ -51,7 +52,7 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
     
     installer "info", @resource[:name]
     if $?.success?
-       installed = `snap info lxd | grep 'tracking:' | sed 's/tracking: *//' | tr -d '\n'`
+       installed = `snap info #{@resource[:name]} | grep 'tracking:' | sed 's/tracking: *//' | tr -d '\n'`
        if @resource[:ensure] != installed
            installer "refresh", @resource[:name] ,"--channel=#{@resource[:ensure]}"
        end
