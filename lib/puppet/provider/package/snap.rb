@@ -1,5 +1,4 @@
 require 'puppet/provider/package'
-require 'open3'
 
 # Super simple snap package provider
 # todo: latest, update
@@ -50,10 +49,10 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
 
   def install
     
-    info = installer "info", @resource[:name]
+    installer "info", @resource[:name]
     if $?.success?
-       test = `snap info lxd | grep 'tracking:' | sed 's/tracking: *//' | tr -d '\n'`
-       if @resource[:ensure] != test
+       installed = `snap info lxd | grep 'tracking:' | sed 's/tracking: *//' | tr -d '\n'`
+       if @resource[:ensure] != installed
            installer "refresh", @resource[:name] ,"--channel=#{@resource[:ensure]}"
        end
     else
