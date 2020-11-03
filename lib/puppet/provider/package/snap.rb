@@ -1,18 +1,21 @@
 require 'puppet/provider/package'
+require 'shellwords'
 
 # Super simple snap package provider
 # todo: latest, update
 Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package do
   desc "Package management based on snap."
 
-  confine :operatingsystem => :ubuntu
+  confine :operatingsystem => [ :ubuntu, :debian ]
   commands :installer => "/usr/bin/snap"
   has_feature :purgeable
   has_feature :upgradeable
+  has_feature :install_options
+  has_feature :versionable
 
   def self.instances
     output = installer "list"
-    lines = output.split("\n")
+    lines = output.force_encoding("UTF-8").split("\n")
     lines.shift # skip header
     instances = []
 
@@ -45,8 +48,42 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
     nil
   end
 
+  def valid_channel?
+    # gets all available channels for a given snap package
+    channels = `snap info #{@resource[:name]} | nawk '/channels:/{flag=1; next} /installed:/{flag=0} flag' | sed 's/:.*//' | sed 's/ *//'`
+
+    channels.each_line do |ch|
+      if @resource[:ensure] == ch.tr("\n",'')
+        return true
+      end
+    end
+
+    return false
+    
+  end
+
   def install
-    installer "install", "--classic", @resource[:name]
+    
+    # checks if snap exists and suppresses error output if it does not
+    `snap list #{@resource[:name]} 2> /dev/null`
+     
+    if not $?.success?
+
+      # package is not installed
+      if valid_channel?
+        installer "install", @resource[:name],"--channel=#{@resource[:ensure]}"
+      else
+        install_options = @resource[:install_options] || ['--classic']
+        args = install_options.push(@resource[:name])
+        installer "install", *args
+      end
+    else
+
+      installed = `snap info #{@resource[:name]} | grep 'tracking:' | sed 's/tracking: *//' | tr -d '\n'`
+      if valid_channel? and @resource[:ensure] != installed
+        installer "refresh", @resource[:name] ,"--channel=#{@resource[:ensure]}"
+      end
+    end
   end
 
   def purge
@@ -59,7 +96,7 @@ Puppet::Type.type(:package).provide :snap, :parent => Puppet::Provider::Package 
 
   def latest
     output = installer "search", @resource[:name]
-    lines = output.split("\n")
+    lines = output.force_encoding("UTF-8").split("\n")
     lines.shift # skip header
 
     lines.each { |line|
